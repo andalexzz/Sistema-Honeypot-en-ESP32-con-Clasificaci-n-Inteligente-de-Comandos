@@ -20,6 +20,6 @@ La arquitectura consiste en:
 - **Dataset:** comandos anonimizados recolectados del honeypot.
 - **Dashboard Web:** visualiza logs, métricas y resultados.
 
-![Arquitectura](assets/.png)
+![Arquitectura](assets/arquitectura.png)
 
 ## 4. Componentes del Repositorio
