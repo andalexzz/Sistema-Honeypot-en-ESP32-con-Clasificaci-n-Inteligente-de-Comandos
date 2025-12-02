@@ -2,6 +2,22 @@
 <!--
   Honeypot con ESP32 - Página web de presentación de proyecto
   -----------------------------------------------------------
+  Archivo: index.html (self-contained)
+
+  Instrucciones:
+  - Este archivo es totalmente editable: abrelo con un editor de texto (VSCode, Sublime, Notepad++).
+  - Sustituye las imágenes de muestra en /assets/ (usa los nombres indicados) o elimina los <img> si no las necesitas.
+  - Para desplegar rápidamente: sube este archivo a cualquier hosting estático (GitHub Pages, Netlify, Vercel).
+  - Estructura recomendada del repositorio:
+      /index.html
+      /assets/logo.png
+      /assets/diagram.png
+      /assets/screenshot-1.png
+      /assets/esp32-pinout.png
+      /css/style.css  (opcional si quieres separar estilos)
+      /js/app.js     (opcional si quieres separar scripts)
+
+  ¿Quieres que genere la versión de React o archivos separados? Pide "genera repositorio".
 -->
 <html lang="es">
 <head>
@@ -83,7 +99,7 @@
       <aside class="card">
         <h3>Resumen técnico</h3>
         <p class="muted">Arquitectura:</p>
-        <img src="assets/diagram.png" alt="Diagrama arquitectura" class="responsive" onerror="this.style.opacity=0.6">
+        <img src="assets/arquitectura_honeypot.png" alt="Diagrama de arquitectura del Honeypot ESP32" class="responsive" onerror="this.style.opacity=0.6">
         <p class="muted">Estado del repositorio:</p>
         <p><span class="kbd">/firmware</span> · <span class="kbd">/server</span> · <span class="kbd">/notebooks</span></p>
         <a class="btn" href="#descargas">Descargas & Repo</a>
@@ -335,7 +351,8 @@ void setup(){
 void loop(){
   WiFiClient client = server.available();
   if(client){
-    String cmd = client.readStringUntil('\n');
+    String cmd = client.readStringUntil('
+');
     Serial.println("CMD: " + cmd);
     // Enviar al backend IA
   }
@@ -348,5 +365,293 @@ void loop(){
 
 ```python
 from flask import Flask, request, jsonify
+import joblib
+import time
 
-import jobl
+app = Flask(__name__)
+model = joblib.load("model.pkl")
+
+@app.post('/infer')
+def infer():
+    data = request.json
+    payload = data.get("payload","")
+    pred = model.predict([payload])[0]
+    return jsonify({"label":pred,"timestamp":time.time()})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+```
+</details>
+
+<!-- ===================== notebooks/analisis.ipynb ===================== -->
+<details><summary><b>notebooks/analisis.ipynb</b></summary>
+
+```json
+{
+  "cells": [
+    {"cell_type":"markdown","source":["# Análisis de comandos del Honeypot ESP32"]},
+    {"cell_type":"code","source":["import pandas as pd"]}
+  ],
+  "metadata":{},
+  "nbformat":4,
+  "nbformat_minor":2
+}
+```
+</details>
+
+<!-- Fin del repositorio generado -->
+
+<!-- ===================== VERSIÓN REACT + STYLES DARK/LIGHT + CI/CD ===================== -->
+
+<details><summary><b>React site (Carpeta: react-site)</b></summary>
+
+```
+react-site/
+├── package.json
+├── public/
+│   └── index.html
+└── src/
+    ├── index.jsx
+    ├── App.jsx
+    ├── components/
+    │   └── Header.jsx
+    └── styles.css
+```
+
+**package.json**
+
+```json
+{
+  "name": "honeypot-esp32-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
+```
+
+**public/index.html**
+
+```html
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Honeypot ESP32 — Proyecto</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
+  </body>
+</html>
+```
+
+**src/index.jsx**
+
+```jsx
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App'
+import './styles.css'
+
+createRoot(document.getElementById('root')).render(<App />)
+```
+
+**src/components/Header.jsx**
+
+```jsx
+import React from 'react'
+
+export default function Header({onToggle, theme}){
+  return (
+    <header className="site-header">
+      <div className="logo">ESP</div>
+      <h1>Honeypot con ESP32 — Proyecto de Investigación</h1>
+      <div className="spacer" />
+      <button className="theme-btn" onClick={onToggle} aria-label="Toggle theme">
+        {theme === 'dark' ? '🌙' : '☀️'}
+      </button>
+    </header>
+  )
+}
+```
+
+**src/App.jsx**
+
+```jsx
+import React, {useState, useEffect} from 'react'
+import Header from './components/Header'
+
+export default function App(){
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark')
+
+  useEffect(()=>{
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  },[theme])
+
+  function toggle(){ setTheme(t => t === 'dark' ? 'light' : 'dark') }
+
+  return (
+    <div className="app">
+      <Header onToggle={toggle} theme={theme} />
+
+      <main className="container">
+        <section className="card">
+          <h2>Resumen ejecutivo</h2>
+          <p>Honeypot implementado en ESP32 que captura y clasifica comandos con IA. Edita el contenido y enlaza a tu repositorio.</p>
+        </section>
+
+        <section className="card">
+          <h3>Estructura del repositorio</h3>
+          <ul>
+            <li><code>/esp32</code></li>
+            <li><code>/python</code></li>
+            <li><code>/docs</code> (sitio estático si usas GitHub Pages)</li>
+          </ul>
+        </section>
+
+        <section className="card">
+          <h3>Deploy</h3>
+          <p>Incluye workflows para GitHub Pages o Firebase en la raíz del repo.</p>
+        </section>
+      </main>
+
+      <footer className="footer">© Proyecto Honeypot ESP32</footer>
+    </div>
+  )
+}
+```
+
+**src/styles.css**
+
+```css
+:root{
+  --bg:#f7f9fc; --card:#ffffff; --text:#092026; --accent:#0ea5a5;
+}
+[data-theme='dark']{ --bg:#071028; --card:#071826; --text:#e6eef6; --accent:#06b6d4; }
+
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text)}
+.site-header{display:flex;align-items:center;gap:12px;padding:18px;background:var(--card);box-shadow:0 6px 18px rgba(2,6,23,0.2)}
+.logo{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#3b82f6);display:flex;align-items:center;justify-content:center;color:#012;font-weight:700}
+.container{max-width:1000px;margin:20px auto;padding:18px}
+.card{background:var(--card);padding:16px;border-radius:10px;margin-bottom:12px}
+.theme-btn{background:transparent;border:0;font-size:18px;cursor:pointer}
+.footer{text-align:center;padding:12px;color:var(--text)}
+.spacer{flex:1}
+```
+
+</details>
+
+<!-- ===================== CI/CD: GitHub Pages (workflow) ===================== -->
+<details><summary><b>.github/workflows/pages.yml</b></summary>
+
+```yaml
+name: Deploy React site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install
+        run: |
+          cd react-site
+          npm ci
+
+      - name: Build
+        run: |
+          cd react-site
+          npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
+        with:
+          build_dir: react-site/dist
+```
+
+</details>
+
+<!-- ===================== CI/CD: Firebase Hosting (workflow) ===================== -->
+<details><summary><b>Firebase hosting (opcional) - .github/workflows/firebase-deploy.yml</b></summary>
+
+```yaml
+name: Deploy to Firebase Hosting
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install
+        run: |
+          cd react-site
+          npm ci
+
+      - name: Build
+        run: |
+          cd react-site
+          npm run build
+
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v1.5.0
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+```
+
+**Nota:** Para Firebase necesitas crear un token con `firebase login:ci` en tu máquina y agregarlo en GitHub Secrets como `FIREBASE_TOKEN`.
+
+</details>
+
+<!-- ===================== Instrucciones rápidas ===================== -->
+<details><summary><b>Instrucciones rápidas</b></summary>
+
+1. Copia la carpeta `react-site/` al repositorio raíz.  
+2. Añade el workflow `/.github/workflows/pages.yml` y haz commit a `main`.  
+3. GitHub Actions construirá y desplegará tu sitio en Pages automáticamente.  
+
+Para Firebase: añade el workflow `firebase-deploy.yml`, configura tu proyecto Firebase y crea `FIREBASE_TOKEN` en GitHub secrets.
+
+</details>
+
+<!-- Fin: VERSIÓN REACT + CI/CD -->
+
+
+
